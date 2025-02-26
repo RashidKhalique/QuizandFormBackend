@@ -9,14 +9,19 @@ dotenv.config();
 const app = express()
 const port = 3000;
 app.use(express.json())
+
+app.use(helmet());
+
+
+
 app.use(express.urlencoded({limit:"16kb",extended:true}))
 app.use(cors({
-    origin: "*",
+    origin: "https://google-form-chi-ashy.vercel.app",
     methods: "GET,POST,PUT,DELETE,OPTIONS",
     credentials: true,
     allowedHeaders: "Content-Type, Authorization",
 }));
-
+app.use(helmet());
 dbConnect();
 app.use("/api",userrouter)
 app.use("/api/quiz",quizrouter) 
