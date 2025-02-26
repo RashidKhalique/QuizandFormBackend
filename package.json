@@ -5,10 +5,11 @@
   "main": "index.js",
   "type": "module",
   "engines": {
-    "node": "20.x"
+      "node": "16.x"
   },
   "scripts": {
-    "dev": "node index.js"
+    "dev": "node index.js",
+    "postinstall": "npm rebuild bcrypt --build-from-source"
   },
   "author": "",
   "license": "ISC",
