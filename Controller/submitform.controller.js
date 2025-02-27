@@ -89,6 +89,8 @@ const submitForm = async (req, res) => {
         return res.status(500).json({ message: "Failed to upload to Cloudinary" });
       }
       imageUrl = response.secure_url;
+      console.log(response);
+      
     }
     let formtype = "";
     if (imageUrl) {
