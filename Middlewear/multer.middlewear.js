@@ -24,7 +24,7 @@ const storage = multer.diskStorage({
 
 
 
-
+export const upload = multer({ storage: storage })
 
 
 // - Rashid Khalique (Mern Stack Modification Project Multer middlewear) 
