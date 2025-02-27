@@ -61,8 +61,10 @@ const submitForm = async (req, res) => {
   const { answers, submit, id } = req.body;
   const userId = req.user.id;
   const file = req.file;
-   console.log(req.file);
-
+  //  console.log(req.file);
+ 
+   console.log(file.path);
+   
    
   if (!answers || !submit) {
     return res.status(400).json({ message: "Answers and submit status are required" });
@@ -83,8 +85,8 @@ const submitForm = async (req, res) => {
 
     let imageUrl = formToSubmit.Form.image;
     if (file) {
-      const filePath = path.join(__dirname, "/temp", file.filename);
-      const response = await uploadOnCloudinary(filePath);
+      // const filePath = path.join(__dirname, "/temp", file.filename);
+      const response = await uploadOnCloudinary(file.path);
       if (!response) {
         return res.status(500).json({ message: "Failed to upload to Cloudinary" });
       }
