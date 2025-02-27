@@ -83,14 +83,26 @@ const submitForm = async (req, res) => {
 
     let imageUrl = formToSubmit.Form.image;
     if (file) {
-      const filePath = path.join(__dirname, "/public/temp", file.filename);
-      const response = await uploadOnCloudinary(filePath);
-      if (!response) {
-        return res.status(500).json({ message: "Failed to upload to Cloudinary" });
+      try {
+        const tempFilePath = path.join('/tmp', file.filename);
+        
+        await fs.promises.writeFile(tempFilePath, file.buffer);
+        
+
+        const response = await uploadOnCloudinary(tempFilePath);
+        
+        if (!response) {
+          return res.status(500).json({ message: "Failed to upload to Cloudinary" });
+        }
+        
+        imageUrl = response.secure_url;
+        console.log(response);
+        
+        await fs.promises.unlink(tempFilePath);
+      } catch (error) {
+        console.error("Error processing file:", error);
+        return res.status(500).json({ message: "Error processing file" });
       }
-      imageUrl = response.secure_url;
-      console.log(response);
-      
     }
     let formType = imageUrl ? "file" : "text";
     const formSubmission = new FormSubmission({
