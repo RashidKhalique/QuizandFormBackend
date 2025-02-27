@@ -17,7 +17,8 @@ cloudinary.config({
             try {
                 if(!localFilePath) return null;
                const response = await cloudinary.uploader.upload(localFilePath, {
-                    resource_type : "auto"
+                    resource_type : "auto",
+                    eager: []  // Ensure no transformations are applied
                 })
                 console.log("File uploade Successfully", response.url);
                 return response
