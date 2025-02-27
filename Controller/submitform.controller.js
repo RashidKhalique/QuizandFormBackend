@@ -59,56 +59,40 @@ const viewform = async (req, res) => {
 
 const submitForm = async (req, res) => {
   const { answers, submit, id } = req.body;
-  const userId = req.user.id;  // Assuming the user id is available from req.user
+  const userId = req.user.id;
   const file = req.file;
-  console.log(req.file);
+   console.log(req.file);
 
-  // Validate the required fields
+   
   if (!answers || !submit) {
     return res.status(400).json({ message: "Answers and submit status are required" });
   }
-
+ 
   try {
-    // Find the form in the database
     const formToSubmit = await googleForm.findOne({ _id: id });
     if (!formToSubmit) {
       return res.status(404).json({ message: "Form not found" });
     }
 
-    // Check if the form has already been submitted (based on toggle)
     if (formToSubmit.Form.toggle) {
-      const existingSubmission = await FormSubmission.findOne({ formid: id, user: userId });
-      if (existingSubmission) {
+      const submitForm = await FormSubmission.find({ formid: id, user: userId });
+      if (submitForm.length > 0) {
         return res.status(400).json({ message: "Form already submitted" });
       }
     }
 
-    // Default to the existing form's image URL
     let imageUrl = formToSubmit.Form.image;
-
-    // If a file is uploaded, handle Cloudinary upload
     if (file) {
-      const filePath = path.join(__dirname, "../public/temp", file.filename);
-
-      // Ensure file is of the expected type and size
-      if (!file.mimetype.startsWith("image/")) {
-        return res.status(400).json({ message: "Only image files are allowed" });
-      }
-
+      const filePath = path.join(__dirname, "/public/temp", file.filename);
       const response = await uploadOnCloudinary(filePath);
       if (!response) {
         return res.status(500).json({ message: "Failed to upload to Cloudinary" });
       }
-
-      // Set the image URL from the Cloudinary response
       imageUrl = response.secure_url;
-      console.log("Cloudinary upload successful:", response);
+      console.log(response);
+      
     }
-
-    // Determine the form type based on whether an image was uploaded
-    const formType = imageUrl ? "file" : "text";
-
-    // Create a new form submission entry
+    let formType = imageUrl ? "file" : "text";
     const formSubmission = new FormSubmission({
       answers,
       submit,
@@ -117,14 +101,12 @@ const submitForm = async (req, res) => {
       QuizName: formToSubmit.Form.quizTitle,
       submittedAt: new Date(),
       image: imageUrl,
-      type: formType,
+      type : formType,
       submitby: formToSubmit.createdBy,
     });
 
-    // Save the form submission to the database
     await formSubmission.save();
 
-    // Send success response
     return res.status(200).json({
       success: true,
       message: "Form submitted successfully",
@@ -134,7 +116,6 @@ const submitForm = async (req, res) => {
     console.error(error);
     return res.status(500).json({
       message: "An error occurred while processing the form submission",
-      error: error.message,  
     });
   }
 };
