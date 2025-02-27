@@ -57,17 +57,21 @@ const viewform = async (req, res) => {
   }
 };
 
+import { v2 as cloudinary } from 'cloudinary';
+
+// Assuming you've configured Cloudinary elsewhere in your app
+// cloudinary.config({ ... });
+
 const submitForm = async (req, res) => {
   const { answers, submit, id } = req.body;
   const userId = req.user.id;
   const file = req.file;
-   console.log(req.file);
+  console.log(req.file);
 
-   
   if (!answers || !submit) {
     return res.status(400).json({ message: "Answers and submit status are required" });
   }
- 
+
   try {
     const formToSubmit = await googleForm.findOne({ _id: id });
     if (!formToSubmit) {
@@ -84,26 +88,40 @@ const submitForm = async (req, res) => {
     let imageUrl = formToSubmit.Form.image;
     if (file) {
       try {
-        const tempFilePath = path.join('/tmp', file.filename);
-        
-        await fs.promises.writeFile(tempFilePath, file.buffer);
-        
+        // Upload directly to Cloudinary without saving to disk
+        const uploadPromise = new Promise((resolve, reject) => {
+          const uploadStream = cloudinary.uploader.upload_stream(
+            { resource_type: 'auto' },
+            (error, result) => {
+              if (error) reject(error);
+              else resolve(result);
+            }
+          );
 
-        const response = await uploadOnCloudinary(tempFilePath);
-        
-        if (!response) {
+          if (Buffer.isBuffer(file.buffer)) {
+            uploadStream.end(file.buffer);
+          } else if (typeof file.stream === 'function') {
+            file.stream().pipe(uploadStream);
+          } else {
+            reject(new Error('Unsupported file type'));
+          }
+        });
+
+        const result = await uploadPromise;
+
+        if (!result || !result.secure_url) {
           return res.status(500).json({ message: "Failed to upload to Cloudinary" });
         }
-        
-        imageUrl = response.secure_url;
-        console.log(response);
-        
-        await fs.promises.unlink(tempFilePath);
+
+        imageUrl = result.secure_url;
+        console.log(result);
+
       } catch (error) {
-        console.error("Error processing file:", error);
-        return res.status(500).json({ message: "Error processing file" });
+        console.error("Error uploading file to Cloudinary:", error);
+        return res.status(500).json({ message: "Error uploading file" });
       }
     }
+
     let formType = imageUrl ? "file" : "text";
     const formSubmission = new FormSubmission({
       answers,
@@ -113,7 +131,7 @@ const submitForm = async (req, res) => {
       QuizName: formToSubmit.Form.quizTitle,
       submittedAt: new Date(),
       image: imageUrl,
-      type : formType,
+      type: formType,
       submitby: formToSubmit.createdBy,
     });
 
