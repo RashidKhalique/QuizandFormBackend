@@ -107,7 +107,7 @@ const submitForm = async (req, res) => {
       QuizName: formToSubmit.Form.quizTitle,
       submittedAt: new Date(),
       // image: imageUrl,
-      type : formType,
+      type : "formType",
       submitby: formToSubmit.createdBy,
     });
 
