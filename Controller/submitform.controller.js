@@ -60,6 +60,10 @@ const viewform = async (req, res) => {
 const submitForm = async (req, res) => {
   const { answers, submit, id } = req.body;
   const userId = req.user.id;
+
+
+      console.log(req.body);
+      
   // const file = req.file;
   //  console.log(req.file);
  
