@@ -23,10 +23,10 @@ const FormSubmissionSchema = new mongoose.Schema({
     type: String,
     default :"Untitled"
   },
-  image:{
-    type: String,
-    default: ""
-  },
+  // image:{
+  //   type: String,
+  //   default: ""
+  // },
   type:{
     type: String
   },

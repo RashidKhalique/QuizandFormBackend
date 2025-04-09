@@ -60,10 +60,10 @@ const viewform = async (req, res) => {
 const submitForm = async (req, res) => {
   const { answers, submit, id } = req.body;
   const userId = req.user.id;
-  const file = req.file;
+  // const file = req.file;
   //  console.log(req.file);
  
-   console.log(file.path);
+  //  console.log(file.path);
    
    
   if (!answers || !submit) {
@@ -83,18 +83,18 @@ const submitForm = async (req, res) => {
       }
     }
 
-    let imageUrl = formToSubmit.Form.image;
-    if (file) {
-      // const filePath = path.join(__dirname, "/temp", file.filename);
-      const response = await uploadOnCloudinary(file.path);
-      if (!response) {
-        return res.status(500).json({ message: "Failed to upload to Cloudinary" });
-      }
-      imageUrl = response.secure_url;
-      console.log(response);
+    // let imageUrl = formToSubmit.Form.image;
+    // if (file) {
+    //   // const filePath = path.join(__dirname, "/temp", file.filename);
+    //   const response = await uploadOnCloudinary(file.path);
+    //   if (!response) {
+    //     return res.status(500).json({ message: "Failed to upload to Cloudinary" });
+    //   }
+    //   imageUrl = response.secure_url;
+    //   console.log(response);
       
-    }
-    let formType = imageUrl ? "file" : "text";
+    // }
+    // let formType = imageUrl ? "file" : "text";
     const formSubmission = new FormSubmission({
       answers,
       submit,
@@ -102,7 +102,7 @@ const submitForm = async (req, res) => {
       formid: id,
       QuizName: formToSubmit.Form.quizTitle,
       submittedAt: new Date(),
-      image: imageUrl,
+      // image: imageUrl,
       type : formType,
       submitby: formToSubmit.createdBy,
     });
