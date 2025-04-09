@@ -17,7 +17,8 @@ app.use(helmet());
 
 app.use(express.urlencoded({limit:"16kb",extended:true}))
 app.use(cors({
-    origin: "https://google-form-chi-ashy.vercel.app",
+    // origin: "https://google-form-chi-ashy.vercel.app",
+    origin: "*",
     methods: "GET,POST,PUT,DELETE,OPTIONS",
     credentials: true,
     allowedHeaders: "Content-Type, Authorization",
