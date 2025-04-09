@@ -15,7 +15,7 @@ app.use(helmet());
 
 
 
-app.use(express.urlencoded({limit:"16kb",extended:true}))
+app.use(express.urlencoded({limit:"130kb",extended:true}))
 app.use(cors({
     // origin: "https://google-form-chi-ashy.vercel.app",
     origin: "*",
