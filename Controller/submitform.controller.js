@@ -64,7 +64,7 @@ const submitForm = async (req, res) => {
 
       console.log(req.body);
       
-  // const file = req.file;
+  // const file = req.file; 
   //  console.log(req.file);
  
   //  console.log(file.path);
